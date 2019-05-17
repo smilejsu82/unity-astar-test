@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class TestAstar : MonoBehaviour
 {
@@ -11,14 +12,34 @@ public class TestAstar : MonoBehaviour
     public int tileWidth = 100;
     public int tileHeight = 100;
 
+    public Vector2 startCoord;
+    public Vector2 endCoord;
+    public Vector2[] arrBlockCoords;
+
+
     private GameObject tilePrefab;
+    private Dictionary<Node, Tile> dicTile = new Dictionary<Node, Tile>();
+    private List<Node> openList = new List<Node>();
+    private Node startNode;
+
     void Start()
     {
         Debug.Log("Hello World!");
+
         this.tilePrefab = Resources.Load<GameObject>("Tile");
+        this.startNode = new Node(startCoord);
 
         this.CreateMap();
         this.MoveCamera();
+        this.AdjacentNode(this.startNode);
+
+        foreach (var node in this.openList)
+        {
+            Debug.LogFormat("{0}", node.coord);
+            var tile = this.dicTile[node];
+            tile.SetColor(Color.yellow);
+            tile.ShowArrow();
+        }
     }
 
     private void MoveCamera()
@@ -50,41 +71,57 @@ public class TestAstar : MonoBehaviour
 
     private void CreateMap()
     {
+        var enumerator = this.arrBlockCoords.GetEnumerator();
+
         for (int i = 0; i < this.col; i++)
         {
             for (int j = 0; j < this.row; j++)
             {
                 var coord = new Vector2(i, j);
-
-                if (coord == new Vector2(1, 2))
-                {
-                    this.CreateTile(coord, Color.green);
-                }
-                else if (coord == new Vector2(3, 1) || coord == new Vector2(3, 2) || coord == new Vector2(3, 3))
-                {
-                    this.CreateTile(coord, Color.blue);
-                }
-                else if (coord == new Vector2(5, 2))
-                {
-                    this.CreateTile(coord, Color.red);
-                }
-                else
-                {
-                    this.CreateTile(coord, Color.black);
-                }
+                this.CreateTile(coord);
             }
         }
     }
 
-    private void CreateTile(Vector2 coord, Color color)
+    private void CreateTile(Vector2 coord)
     {
+
         var tileGo = Instantiate(this.tilePrefab);
         var screenPos = new Vector2(coord.x * this.tileWidth, coord.y * -this.tileHeight);
         var worldPos = Camera.main.ScreenToWorldPoint(screenPos);
         worldPos.z = 0;
         tileGo.transform.position = worldPos;
         var tile = tileGo.GetComponent<Tile>();
-        tile.Init(coord, color);
+
+        var enumerator = this.arrBlockCoords.GetEnumerator();
+
+        if (coord == this.startCoord)
+        {
+            tile.SetColor(Color.green);
+            tile.HideArrow();
+        }
+        else if (coord == this.endCoord)
+        {
+            tile.SetColor(Color.red);
+            tile.HideArrow();
+        }
+        else
+        {
+            tile.SetColor(Color.black);
+            tile.HideArrow();
+        }
+
+        while (enumerator.MoveNext())
+        {
+            if ((Vector2)enumerator.Current == coord)
+            {
+                tile.IsBlock = true;
+                tile.SetColor(Color.blue);
+            }
+        }
+
+        tile.Init(coord);
+        this.dicTile.Add(tile.Node, tile);
     }
 
     private Vector2 Map2World(Vector2 coord, Vector2 offsetPos)
@@ -92,10 +129,7 @@ public class TestAstar : MonoBehaviour
         var screenPos = new Vector2(coord.x * this.tileWidth, coord.y * -this.tileHeight);
         screenPos.x -= offsetPos.x;
         screenPos.y += offsetPos.y;
-
         var worldPos = Camera.main.ScreenToWorldPoint(screenPos);
-        
-
         return worldPos;
     }
 
@@ -103,4 +137,47 @@ public class TestAstar : MonoBehaviour
     //{
 
     //}
+
+    private void AdjacentNode(Node node)
+    {
+        
+        System.Action<Vector2, float> addOpenList = (coord, angle) => {
+            if (coord.x >= 0 && coord.y >= 0) {
+                //InvalidOperationException: Sequence contains no elements
+                try
+                {
+                    var tile = this.dicTile.Where(x => x.Value.Node.coord == coord).First().Value;
+                    if (!tile.IsBlock)
+                    {
+                        this.openList.Add(tile.Node);
+                    }
+                    tile.arrowAngle = angle;
+                }
+                catch (InvalidOperationException e)
+                {
+                    Debug.Log(e.StackTrace);
+                    Debug.LogFormat("<color=red>coord: {0}</color>", coord);
+                }
+                
+            }
+        };
+
+        var left = node.coord + Vector2.left;
+        var right = node.coord + Vector2.right;
+        var up = node.coord + Vector2.up;
+        var down = node.coord + Vector2.down;
+        var leftUp = node.coord + Vector2.left + Vector2.up;
+        var rightUp = node.coord + Vector2.right + Vector2.up;
+        var leftDown = node.coord + Vector2.left+ Vector2.down;
+        var rightDown = node.coord + Vector2.right + Vector2.down;
+
+        addOpenList(left, -90);
+        addOpenList(right, 90);
+        addOpenList(up, 0);
+        addOpenList(down, -180);
+        addOpenList(leftUp, -45);
+        addOpenList(rightUp, 45);
+        addOpenList(leftDown, -135);
+        addOpenList(rightDown, 135);
+    }
 }
