@@ -178,6 +178,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arrowGo: {fileID: 2575631884237711754}
+  textMeshF: {fileID: 7225996796574865231}
+  textMeshG: {fileID: 2913609927538291777}
+  textMeshH: {fileID: 425051082505233131}
+  arrowAngle: 0
 --- !u!1 &1669473641698153537
 GameObject:
   m_ObjectHideFlags: 0

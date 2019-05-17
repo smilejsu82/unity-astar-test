@@ -39,6 +39,7 @@ public class TestAstar : MonoBehaviour
             var tile = this.dicTile[node];
             tile.SetColor(Color.yellow);
             tile.ShowArrow();
+            tile.ShowFGH();
         }
     }
 
@@ -120,6 +121,7 @@ public class TestAstar : MonoBehaviour
             }
         }
 
+        tile.HideFGH();
         tile.Init(coord);
         this.dicTile.Add(tile.Node, tile);
     }
@@ -141,12 +143,20 @@ public class TestAstar : MonoBehaviour
     private void AdjacentNode(Node node)
     {
         
-        System.Action<Vector2, float> addOpenList = (coord, angle) => {
+        System.Action<Vector2, float, int> addOpenList = (coord, angle, g) => {
             if (coord.x >= 0 && coord.y >= 0) {
                 //InvalidOperationException: Sequence contains no elements
                 try
                 {
                     var tile = this.dicTile.Where(x => x.Value.Node.coord == coord).First().Value;
+                    float dx = Mathf.Abs(this.startCoord.x - this.endCoord.x);
+                    float dy = Mathf.Abs(this.startCoord.y - this.endCoord.y);
+                    float h = 10 * (dx + dy);
+
+                    tile.Node.g = g;
+                    tile.Node.h = h;
+                    tile.Node.f = g + h;
+
                     if (!tile.IsBlock)
                     {
                         this.openList.Add(tile.Node);
@@ -171,13 +181,13 @@ public class TestAstar : MonoBehaviour
         var leftDown = node.coord + Vector2.left+ Vector2.down;
         var rightDown = node.coord + Vector2.right + Vector2.down;
 
-        addOpenList(left, -90);
-        addOpenList(right, 90);
-        addOpenList(up, 0);
-        addOpenList(down, -180);
-        addOpenList(leftUp, -45);
-        addOpenList(rightUp, 45);
-        addOpenList(leftDown, -135);
-        addOpenList(rightDown, 135);
+        addOpenList(left, -90, 10);
+        addOpenList(right, 90, 10);
+        addOpenList(up, 0, 10);
+        addOpenList(down, -180, 10);
+        addOpenList(leftUp, -45, 14);
+        addOpenList(rightUp, 45, 14);
+        addOpenList(leftDown, -135, 14);
+        addOpenList(rightDown, 135, 14);
     }
 }

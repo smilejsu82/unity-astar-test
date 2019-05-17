@@ -239,8 +239,9 @@ MonoBehaviour:
   startCoord: {x: 1, y: 2}
   endCoord: {x: 5, y: 2}
   arrBlockCoords:
-  - {x: 1, y: 1}
-  - {x: 1, y: 3}
+  - {x: 3, y: 1}
+  - {x: 3, y: 2}
+  - {x: 3, y: 3}
 --- !u!4 &1859855281
 Transform:
   m_ObjectHideFlags: 0
