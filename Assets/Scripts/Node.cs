@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Node 
 {
+    //public Node parentNode;
     public Vector2 coord;
     public float f;
     public float g;

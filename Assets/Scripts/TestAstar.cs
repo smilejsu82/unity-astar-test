@@ -149,9 +149,15 @@ public class TestAstar : MonoBehaviour
                 try
                 {
                     var tile = this.dicTile.Where(x => x.Value.Node.coord == coord).First().Value;
-                    float dx = Mathf.Abs(this.startCoord.x - this.endCoord.x);
-                    float dy = Mathf.Abs(this.startCoord.y - this.endCoord.y);
-                    float h = 10 * (dx + dy);
+                    var foundCoord = tile.Node.coord;
+                    Debug.LogFormat("foundCoord: {0}, {1}", tile.Node.coord.x, tile.Node.coord.y);
+                    Debug.LogFormat("endCoord: {0}, {1}", endCoord.x, endCoord.y);
+
+
+
+                    float dx = Mathf.Abs(endCoord.x - foundCoord.x);
+                    float dy = Mathf.Abs(endCoord.y - foundCoord.y);
+                    float h = 100 * (dx + dy);
 
                     tile.Node.g = g;
                     tile.Node.h = h;
@@ -181,13 +187,13 @@ public class TestAstar : MonoBehaviour
         var leftDown = node.coord + Vector2.left+ Vector2.down;
         var rightDown = node.coord + Vector2.right + Vector2.down;
 
-        addOpenList(left, -90, 10);
-        addOpenList(right, 90, 10);
-        addOpenList(up, 0, 10);
-        addOpenList(down, -180, 10);
-        addOpenList(leftUp, -45, 14);
-        addOpenList(rightUp, 45, 14);
-        addOpenList(leftDown, -135, 14);
-        addOpenList(rightDown, 135, 14);
+        addOpenList(left, -90, 100);
+        addOpenList(right, 90, 100);
+        addOpenList(up, 0, 100);
+        addOpenList(down, -180, 100);
+        addOpenList(leftUp, -45, 140);
+        addOpenList(rightUp, 45, 140);
+        addOpenList(leftDown, -135, 140);
+        addOpenList(rightDown, 135, 140);
     }
 }
