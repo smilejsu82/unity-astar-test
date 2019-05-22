@@ -69,7 +69,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 65d14617962a95844856bd80fd3721b6, type: 3}
-  m_Color: {r: 0, g: 0.9374716, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.16862746, b: 0.48235294, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -113,7 +113,7 @@ Transform:
   - {fileID: 7589686368994405000}
   - {fileID: 4007395564035044892}
   - {fileID: 3355394452059430747}
-  - {fileID: 6421762858384597164}
+  - {fileID: 8988106949650244030}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -177,7 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73689673fa493144aa275753a746085f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arrowGo: {fileID: 2575631884237711754}
+  arrowGo: {fileID: 3774250901612921544}
   spBg: {fileID: 207685593882207352}
   spStroke: {fileID: 2132059884106817063}
   textMeshF: {fileID: 7225996796574865231}
@@ -209,7 +209,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1669473641698153537}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.455, y: -0.32, z: -0.1}
+  m_LocalPosition: {x: 0.455, y: -0.257, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 9154752580611620852}
@@ -262,13 +262,13 @@ TextMesh:
   m_GameObject: {fileID: 1669473641698153537}
   m_Text: 1,2
   m_OffsetZ: 0
-  m_CharacterSize: 0.08
+  m_CharacterSize: 0.1
   m_LineSpacing: 1
   m_Anchor: 2
   m_Alignment: 2
   m_TabSize: 4
-  m_FontSize: 0
-  m_FontStyle: 0
+  m_FontSize: 18
+  m_FontStyle: 1
   m_RichText: 1
   m_Font: {fileID: 12800000, guid: b04d112cad425414cacbd15453432a6e, type: 3}
   m_Color:
@@ -300,7 +300,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2157282016797113047}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.464, y: -0.32, z: -0.1}
+  m_LocalPosition: {x: -0.464, y: -0.257, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 9154752580611620852}
@@ -353,13 +353,13 @@ TextMesh:
   m_GameObject: {fileID: 2157282016797113047}
   m_Text: 1,2
   m_OffsetZ: 0
-  m_CharacterSize: 0.08
+  m_CharacterSize: 0.1
   m_LineSpacing: 1
   m_Anchor: 0
   m_Alignment: 0
   m_TabSize: 4
-  m_FontSize: 0
-  m_FontStyle: 0
+  m_FontSize: 18
+  m_FontStyle: 1
   m_RichText: 1
   m_Font: {fileID: 12800000, guid: b04d112cad425414cacbd15453432a6e, type: 3}
   m_Color:
@@ -391,10 +391,10 @@ Transform:
   m_GameObject: {fileID: 2575631884237711754}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_Children: []
-  m_Father: {fileID: 9154752580611620852}
-  m_RootOrder: 5
+  m_Father: {fileID: 8988106949650244030}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7349249570187003463
 SpriteRenderer:
@@ -433,8 +433,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 06e90dfb4dc8fb045a22e54613aeea38, type: 3}
-  m_Color: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 7631c29a64a777d4e926063abc7c9625, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -444,6 +444,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &3774250901612921544
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8988106949650244030}
+  m_Layer: 0
+  m_Name: arrow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8988106949650244030
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3774250901612921544}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6421762858384597164}
+  m_Father: {fileID: 9154752580611620852}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6239303336665839773
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,7 +492,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7002893134127174488
 Transform:
   m_ObjectHideFlags: 0
@@ -470,7 +501,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6239303336665839773}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.139, y: 0.134, z: -0.1}
+  m_LocalPosition: {x: 0.447, y: 0.486, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 9154752580611620852}
@@ -525,16 +556,16 @@ TextMesh:
   m_OffsetZ: 0
   m_CharacterSize: 0.1
   m_LineSpacing: 1
-  m_Anchor: 0
-  m_Alignment: 0
+  m_Anchor: 2
+  m_Alignment: 2
   m_TabSize: 4
   m_FontSize: 0
-  m_FontStyle: 0
+  m_FontStyle: 2
   m_RichText: 1
   m_Font: {fileID: 12800000, guid: b04d112cad425414cacbd15453432a6e, type: 3}
   m_Color:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4285295724
 --- !u!1 &8720425404054412500
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,7 +592,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8720425404054412500}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.47, y: 0.477, z: -0.1}
+  m_LocalPosition: {x: -0.47, y: 0.491, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 9154752580611620852}
@@ -614,13 +645,13 @@ TextMesh:
   m_GameObject: {fileID: 8720425404054412500}
   m_Text: 1,2
   m_OffsetZ: 0
-  m_CharacterSize: 0.08
+  m_CharacterSize: 0.1
   m_LineSpacing: 1
   m_Anchor: 0
   m_Alignment: 0
   m_TabSize: 4
-  m_FontSize: 0
-  m_FontStyle: 0
+  m_FontSize: 18
+  m_FontStyle: 1
   m_RichText: 1
   m_Font: {fileID: 12800000, guid: b04d112cad425414cacbd15453432a6e, type: 3}
   m_Color:

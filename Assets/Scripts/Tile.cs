@@ -38,12 +38,18 @@ public class Tile : MonoBehaviour, IComparable<Tile>
         var testAstar = GameObject.FindObjectOfType<TestAstar>();
         if (this.Node.parentNode != null)
         {
-
+            this.arrowGo.transform.rotation = Quaternion.Euler(Vector3.zero);
             var parentTile = testAstar.GetTile(this.Node.parentNode);
             var relative = this.arrowGo.transform.InverseTransformPoint(parentTile.transform.position);
             var angle = Mathf.Atan2(relative.y, relative.x) * Mathf.Rad2Deg;
+
+            if (this.Node.coord == new Vector2(2, 4))
+            {
+                Debug.LogFormat("angle: {0}", angle);
+            }
+
             this.arrowGo.SetActive(true);
-            this.arrowGo.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle-90));
+            this.arrowGo.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
         }
         
     }
@@ -109,9 +115,13 @@ public class Tile : MonoBehaviour, IComparable<Tile>
 
     public int CompareTo(Tile other)
     {
-        if (this.Node.f.Equals(other.Node.f))  //if both f values are same
+        if (this.Node.f.Equals(other.Node.f) && this.Node.g.Equals(other.Node.g) && this.Node.h.Equals(other.Node.h))  //if both f values are same
+        {
             return -this.Node.coord.y.CompareTo(other.Node.coord.y); // then compare coord y
+        }
         else
+        {
             return this.Node.f.CompareTo(other.Node.f);
+        }
     }
 }
