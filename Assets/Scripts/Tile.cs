@@ -3,18 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile : MonoBehaviour
+public class Tile : MonoBehaviour, IComparable<Node>
 {
     public GameObject arrowGo;
-    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer spBg;
+    public SpriteRenderer spStroke;
     private TextMesh textMesh;
 
     public TextMesh textMeshF;
     public TextMesh textMeshG;
     public TextMesh textMeshH;
-
-    [HideInInspector]
-    public float arrowAngle;
 
     public Node Node { get; private set; }
     public bool IsBlock { get; set; }
@@ -22,11 +20,7 @@ public class Tile : MonoBehaviour
     private void Awake()
     {
         this.Node = new Node();
-        this.spriteRenderer = this.GetComponent<SpriteRenderer>();
         this.textMesh = this.transform.Find("textmesh_coord").GetComponent<TextMesh>();
-        this.textMeshF.color = Color.black;
-        this.textMeshG.color = Color.black;
-        this.textMeshH.color = Color.black;
     }
 
     public void Init(Vector2 coord)
@@ -35,26 +29,73 @@ public class Tile : MonoBehaviour
         this.textMesh.text = coord.x + " , " + coord.y;
     }
 
-    public void SetColor(Color color)
-    {
-        this.spriteRenderer.color = color;
-    }
-
     public void HideArrow()
     {
         this.arrowGo.SetActive(false);
     }
     public void ShowArrow()
     {
-        this.arrowGo.SetActive(true);
-        this.arrowGo.transform.rotation = Quaternion.Euler(new Vector3(0, 0, this.arrowAngle));
+        var testAstar = GameObject.FindObjectOfType<TestAstar>();
+        if (this.Node.parentNode != null)
+        {
+
+
+            var parentPos = testAstar.Map2World(this.Node.parentNode.coord, Vector2.zero);
+
+            var relative = this.arrowGo.transform.InverseTransformPoint(parentPos);
+            var angle = Mathf.Atan2(relative.y, relative.x) * Mathf.Rad2Deg;
+            this.arrowGo.SetActive(true);
+            this.arrowGo.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle-90));
+        }
+        
     }
 
-    public void ShowFGH()
+    private Vector2 Map2World(Vector2 coord)
+    {
+        var screenPos = new Vector2(coord.x * 100, coord.y * -100);
+        //screenPos.x -= offsetPos.x;
+        //screenPos.y += offsetPos.y;
+        var worldPos = Camera.main.ScreenToWorldPoint(screenPos);
+        return worldPos;
+    }
+
+    public void SetStrokeColor(string hexColor)
+    {
+        Color color;
+        if (ColorUtility.TryParseHtmlString(string.Format("#{0}", hexColor), out color))
+        {
+            this.spStroke.color = color;
+        }
+    }
+
+    public void SetStrokeColor(Color color)
+    {
+        this.spStroke.color = color;
+    }
+    public void SetBgColor(string hexColor)
+    {
+        Color color;
+        if (ColorUtility.TryParseHtmlString(string.Format("#{0}", hexColor), out color))
+        {
+            this.spBg.color = color;
+        }
+    }
+
+    public void SetBgColor(Color color)
+    {
+        this.spBg.color = color;
+    }
+
+    public void UpdateFGH()
     {
         this.textMeshF.text = this.Node.f.ToString();
         this.textMeshG.text = this.Node.g.ToString();
         this.textMeshH.text = this.Node.h.ToString();
+    }
+
+    public void ShowFGH()
+    {
+        this.UpdateFGH();
 
         this.textMeshF.gameObject.SetActive(true);
         this.textMeshG.gameObject.SetActive(true);
@@ -66,5 +107,17 @@ public class Tile : MonoBehaviour
         this.textMeshF.gameObject.SetActive(false);
         this.textMeshG.gameObject.SetActive(false);
         this.textMeshH.gameObject.SetActive(false);
+    }
+
+    public int CompareTo(Node other)
+    {
+        if (this.Node.f != 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return this.Node.f.CompareTo(other.f);
+        }
     }
 }
