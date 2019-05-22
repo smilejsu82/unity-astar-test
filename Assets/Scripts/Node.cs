@@ -7,9 +7,9 @@ public class Node : IComparable<Node>
 {
     public Node parentNode;
     public Vector2 coord;
-    public float f;
-    public float g;
-    public float h;
+    public int f;
+    public int g;
+    public int h;
 
     public Node()
     {

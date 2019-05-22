@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile : MonoBehaviour, IComparable<Node>
+public class Tile : MonoBehaviour, IComparable<Tile>
 {
     public GameObject arrowGo;
     public SpriteRenderer spBg;
@@ -39,10 +39,8 @@ public class Tile : MonoBehaviour, IComparable<Node>
         if (this.Node.parentNode != null)
         {
 
-
-            var parentPos = testAstar.Map2World(this.Node.parentNode.coord, Vector2.zero);
-
-            var relative = this.arrowGo.transform.InverseTransformPoint(parentPos);
+            var parentTile = testAstar.GetTile(this.Node.parentNode);
+            var relative = this.arrowGo.transform.InverseTransformPoint(parentTile.transform.position);
             var angle = Mathf.Atan2(relative.y, relative.x) * Mathf.Rad2Deg;
             this.arrowGo.SetActive(true);
             this.arrowGo.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle-90));
@@ -109,15 +107,11 @@ public class Tile : MonoBehaviour, IComparable<Node>
         this.textMeshH.gameObject.SetActive(false);
     }
 
-    public int CompareTo(Node other)
+    public int CompareTo(Tile other)
     {
-        if (this.Node.f != 0)
-        {
-            return 1;
-        }
+        if (this.Node.f.Equals(other.Node.f))  //if both f values are same
+            return -this.Node.coord.y.CompareTo(other.Node.coord.y); // then compare coord y
         else
-        {
-            return this.Node.f.CompareTo(other.f);
-        }
+            return this.Node.f.CompareTo(other.Node.f);
     }
 }

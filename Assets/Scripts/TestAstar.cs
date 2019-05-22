@@ -24,6 +24,7 @@ public class TestAstar : MonoBehaviour
     public Button btnClear;
     public Button btnOpenList;
     public Button btnCloseList;
+    public Button btnShowArrow;
 
 
     //선택된 타일 
@@ -64,6 +65,10 @@ public class TestAstar : MonoBehaviour
         //열린목록에 있는 모든 타일들의 비용을 측정
         this.CalcFGH();
 
+        //인접한 사각형들이 열린목록에 있다면 선택된 사각형의 G값보다 작은것이 있는지 찾고 
+        //있다면 인접한 사각형들의 부모를 찾은 사각형으로 설정하고 F값과 G값을 다시 계산 
+        this.SearchBestWayByG();
+
         this.ShowFGH();
 
         this.MoveCamera();
@@ -85,23 +90,22 @@ public class TestAstar : MonoBehaviour
         }
     }
 
-    private void CalcFGH(Tile tile)
+    private void CalcFG(Tile tile)
     {
         //Coord -> World
-        var adjacentTilePos = Map2World(tile.Node.coord, Vector2.zero);
-        var selectedTilePos = Map2World(this.selectedTile.Node.coord, Vector2.zero);
-        var distance = Vector2.Distance(adjacentTilePos, selectedTilePos);
-        var g = (float)Math.Round(distance, 2) * 10;
+        var adjacentTile = this.dicTile[tile.Node];
+        var selectedTile = this.dicTile[this.selectedTile.Node];
+        var parentTile = this.dicTile[tile.Node.parentNode];
 
-        var dx = Mathf.Abs(this.endCoord.x - tile.Node.coord.x);
-        var dy = Mathf.Abs(this.endCoord.y - tile.Node.coord.y);
-        var h = (dx + dy) * 10;
+        var distance = Vector2.Distance(adjacentTile.transform.position, parentTile.transform.position);
+        //var g = distance * 10f;
 
-        var f = g + h;
+        var g = Mathf.RoundToInt(distance * 10);
 
-        tile.Node.f = f;
+        var f = g + tile.Node.h;
+
+        tile.Node.f = (int)f;
         tile.Node.g = tile.Node.parentNode.g + g;
-        tile.Node.h = h;
     }
 
 
@@ -110,20 +114,27 @@ public class TestAstar : MonoBehaviour
         foreach (var tile in this.openList)
         {
             //Coord -> World
-            var adjacentTilePos = Map2World(tile.Node.coord, Vector2.zero);
-            var selectedTilePos = Map2World(this.selectedTile.Node.coord, Vector2.zero);
-            var distance = Vector2.Distance(adjacentTilePos, selectedTilePos);
-            var g = (float)Math.Round(distance, 2) * this.tileWidth;
+            var adjacentTile = this.dicTile[tile.Node];
+            var selectedTile = this.dicTile[this.selectedTile.Node];
+            var parentTile = this.dicTile[tile.Node.parentNode];
+
+            var distance = Vector2.Distance(adjacentTile.transform.position, parentTile.transform.position);
+            //var g = distance * 10f;
+
+            var g = Mathf.RoundToInt(distance * 10) + tile.Node.parentNode.g;
 
             var dx = Mathf.Abs(this.endCoord.x - tile.Node.coord.x);
             var dy = Mathf.Abs(this.endCoord.y - tile.Node.coord.y);
-            var h = (dx + dy) * this.tileWidth;
+            var h = (dx + dy) * 10;
 
             var f = g + h;
 
-            tile.Node.f = f;
-            tile.Node.g = tile.Node.parentNode.g + g;
-            tile.Node.h = h;
+            tile.Node.g = (int)g;
+            tile.Node.h = (int)h;
+            tile.Node.f = (int)f;
+            
+
+            //Debug.LogFormat("coord: {0}\tf: {1}\tg: {2}\th: {3}", tile.Node.coord, tile.Node.f, tile.Node.g, tile.Node.h);
         }
     }
 
@@ -162,17 +173,21 @@ public class TestAstar : MonoBehaviour
             //타일선택
             this.GetSelectTile();
 
+            //닫힌 목록에 추가 
+            this.AddCloseList();
+
             //인접타일 구하기 
             this.GetAdjecentTiles();
 
             //열린 목록에 넣기 
             this.AddToOpenList();
 
-            //닫힌 목록에 추가 
-            this.AddCloseList();
-
             //FGH계산 
             this.CalcFGH();
+
+            //this.SearchBestWayByG();
+
+            this.ShowFGH();
 
             //열린목록에 잇는 모든 타일들의 F값을 표시 
             this.DisplayFGH();
@@ -208,14 +223,47 @@ public class TestAstar : MonoBehaviour
             }
         });
 
+        this.btnShowArrow.onClick.AddListener(() => {
+            foreach (var tile in this.openList)
+            {
+                tile.ShowArrow();
+            }
+        });
+
     }
+
+    private void SearchBestWayByG()
+    {
+        Tile foundTile = null;
+        foreach (var tile in this.adjacentTiles)
+        {
+            if (this.openList.Contains(tile))
+            {
+                foundTile = tile;
+            }
+        }
+
+        if (foundTile != null)
+        {
+            foreach (var tile in this.adjacentTiles)
+            {
+                if (tile != foundTile)
+                {
+                    tile.Node.parentNode = foundTile.Node;
+                    this.CalcFG(tile);
+                }
+            }
+        }
+
+    }
+
 
     private void DisplayFGH()
     {
         foreach (var pair in this.dicTile)
         {
             var tile = pair.Value;
-            if (this.openList.Contains(tile))
+            if (this.openList.Contains(tile) || this.closeList.Contains(tile))
             {
                 tile.ShowFGH();
             }
@@ -237,20 +285,22 @@ public class TestAstar : MonoBehaviour
         {
             //다음 노드 선택 
             //F값이 제일 작은타일들을 열린목록에서 선택한다.
+            this.openList.Sort();
 
-            var list = new List<Node>();
-            foreach (var tile in this.openList)
-            {
-                list.Add(tile.Node);
-            }
-            list.Sort();
-            var node = list.FirstOrDefault();
-            this.selectedTile = this.dicTile[node];
+            var list = this.openList.OrderBy(x => x.Node.f).OrderByDescending(x=>x.Node.coord.y);
 
-            Debug.LogFormat("selectedTile: {0}", selectedTile);
-            //this.openList.Sort();
-            //this.selectedTile = this.openList.First();
+            //foreach (var tile in list)
+            //{
+            //    if (tile.Node.coord != this.selectedTile.Node.coord) {
+            //        Debug.LogFormat("tile: {0}, f: {1}, g: {2}, h: {3}", tile.Node.coord, tile.Node.f, tile.Node.g, tile.Node.h);
+            //    }
+            //}
+
+            this.selectedTile = this.openList.FirstOrDefault();
+            //Debug.LogFormat("selectedTile coord: {0}", selectedTile.Node.coord);
         }
+
+        this.selectedTile.SetBgColor(Color.cyan);
     }
 
     //선택된 주변 타일들을 검색 한다.
@@ -263,13 +313,15 @@ public class TestAstar : MonoBehaviour
         var right = coord + Vector2.right;
         var up = coord + Vector2.up;
         var down = coord + Vector2.down;
+        var rightDown = coord + Vector2.right + Vector2.down;
+        var leftDown = coord + Vector2.left + Vector2.down;
         var leftUp = coord + Vector2.left + Vector2.up;
         var rightUp = coord + Vector2.right + Vector2.up;
-        var leftDown = coord + Vector2.left + Vector2.down;
-        var rightDown = coord + Vector2.right + Vector2.down;
+        
+        
 
-        Vector2[] arrAdjecentTileCoords = { left, right, up, down, leftUp, rightUp, leftDown, rightDown };
-        //InvalidOperationException: Sequence contains no elements
+        Vector2[] arrAdjecentTileCoords = { left, right, up, down, leftDown, rightDown, leftUp, rightUp, };
+        
         foreach (var cord in arrAdjecentTileCoords)
         {
             var tile = this.dicTile.Where(x => x.Value.Node.coord == cord).FirstOrDefault().Value;
@@ -340,6 +392,7 @@ public class TestAstar : MonoBehaviour
                 {
                     tile.IsBlock = true;
                     tile.SetBgColor(Color.blue);
+                    tile.HideArrow();
                 }
             }
         }
@@ -379,5 +432,10 @@ public class TestAstar : MonoBehaviour
         screenPos.y += offsetPos.y;
         var worldPos = Camera.main.ScreenToWorldPoint(screenPos);
         return worldPos;
+    }
+
+    public Tile GetTile(Node node)
+    {
+        return this.dicTile[node];
     }
 }
