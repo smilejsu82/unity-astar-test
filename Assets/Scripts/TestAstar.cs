@@ -131,9 +131,6 @@ public class TestAstar : MonoBehaviour
             tile.Node.g = (int)g;
             tile.Node.h = (int)h;
             tile.Node.f = (int)f;
-            
-
-            //Debug.LogFormat("coord: {0}\tf: {1}\tg: {2}\th: {3}", tile.Node.coord, tile.Node.f, tile.Node.g, tile.Node.h);
         }
     }
 
@@ -229,9 +226,6 @@ public class TestAstar : MonoBehaviour
 
             this.ShowFGH();
 
-            //열린목록에 잇는 모든 타일들의 F값을 표시 
-            //this.DisplayFGH();
-
         });
 
         this.btnSelected.onClick.AddListener(() => {
@@ -269,25 +263,7 @@ public class TestAstar : MonoBehaviour
                 tile.ShowArrow();
             }
         });
-
     }
-
-
-    //private void DisplayFGH()
-    //{
-    //    foreach (var pair in this.dicTile)
-    //    {
-    //        var tile = pair.Value;
-    //        if (this.openList.Contains(tile) || this.closeList.Contains(tile))
-    //        {
-    //            tile.ShowFGH();
-    //        }
-    //        else
-    //        {
-    //            tile.HideFGH();
-    //        }
-    //    }
-    //}
 
     //타일을 선택한다.
     private void GetSelectTile()
@@ -301,18 +277,7 @@ public class TestAstar : MonoBehaviour
             //다음 노드 선택 
             //F값이 제일 작은타일들을 열린목록에서 선택한다.
             this.openList.Sort();
-
-            //var list = this.openList.OrderBy(x => x.Node.f).OrderByDescending(x=>x.Node.coord.y);
-
-            //foreach (var tile in list)
-            //{
-            //    if (tile.Node.coord != this.selectedTile.Node.coord) {
-            //        Debug.LogFormat("tile: {0}, f: {1}, g: {2}, h: {3}", tile.Node.coord, tile.Node.f, tile.Node.g, tile.Node.h);
-            //    }
-            //}
             this.selectedTile = this.openList.FirstOrDefault();
-            
-            //Debug.LogFormat("selectedTile coord: {0}", selectedTile.Node.coord);
         }
 
         this.selectedTile.SetStrokeColor(Color.cyan);
@@ -332,11 +297,28 @@ public class TestAstar : MonoBehaviour
         var leftDown = coord + Vector2.left + Vector2.down;
         var leftUp = coord + Vector2.left + Vector2.up;
         var rightUp = coord + Vector2.right + Vector2.up;
-        
-        
 
-        Vector2[] arrAdjecentTileCoords = { leftDown, rightDown, left, right, up, down,  leftUp, rightUp, };
-        
+        Vector2[] arrAdjecentTileCoords = { leftUp, up, rightUp, left, right, leftDown, down, rightDown };
+
+        System.Func<Vector2, Vector2, bool> checkCorner = (tileCoord, dir) => {
+            var blockCoord = tileCoord + dir;
+            if (blockCoord.x > 0 && blockCoord.y > 0)
+            {
+                var blockTile = this.dicTile.Where(x => x.Value.Node.coord == blockCoord).FirstOrDefault().Value;
+                if (blockTile.IsBlock)
+                {
+                    var relative = this.selectedTile.transform.InverseTransformPoint(blockTile.transform.position);
+                    Debug.LogFormat("{0}", relative);
+                    if (relative == Vector3.right)
+                    {
+                        Debug.LogFormat("blockTile: {0}", blockTile.Node.coord);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        };
+
         foreach (var cord in arrAdjecentTileCoords)
         {
             var tile = this.dicTile.Where(x => x.Value.Node.coord == cord).FirstOrDefault().Value;
@@ -344,38 +326,14 @@ public class TestAstar : MonoBehaviour
             {
                 if (!tile.IsBlock && !this.closeList.Contains(tile))
                 {
-                    var blockCoord = tile.Node.coord + Vector2.up;
-                    
-                    if (blockCoord.x > 0 && blockCoord.y > 0)
-                    {
-                        var blockTile = this.dicTile.Where(x => x.Value.Node.coord == blockCoord).FirstOrDefault().Value;
-                        if (blockTile.IsBlock)
-                        {
-                            var relative = this.selectedTile.transform.InverseTransformPoint(blockTile.transform.position);
-                            Debug.LogFormat("{0}", relative);
-                            if (relative == Vector3.right)
-                            {
-                                Debug.LogFormat("blockTile: {0}", blockTile.Node.coord);
-                                continue;
-                            }
-                        }
-                    }
 
-                    blockCoord = tile.Node.coord + Vector2.down;
-                    if (blockCoord.x > 0 && blockCoord.y > 0)
+                    if (checkCorner(tile.Node.coord, Vector2.right) ||
+                        checkCorner(tile.Node.coord, Vector2.left) ||
+                        checkCorner(tile.Node.coord, Vector2.up) ||
+                        checkCorner(tile.Node.coord, Vector2.down))
                     {
-                        var blockTile = this.dicTile.Where(x => x.Value.Node.coord == blockCoord).FirstOrDefault().Value;
-                        if (blockTile.IsBlock)
-                        {
-                            var relative = this.selectedTile.transform.InverseTransformPoint(blockTile.transform.position);
-                            Debug.LogFormat("{0}", relative);
-                            if (relative == Vector3.right) {
-                                Debug.LogFormat("blockTile: {0}", blockTile.Node.coord);
-                                continue;
-                            }
-                        }
+                        continue;
                     }
-
 
                     this.adjacentTiles.Add(tile);
                 }

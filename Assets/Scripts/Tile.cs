@@ -115,13 +115,15 @@ public class Tile : MonoBehaviour, IComparable<Tile>
 
     public int CompareTo(Tile other)
     {
-        if (this.Node.f.Equals(other.Node.f) && this.Node.g.Equals(other.Node.g) && this.Node.h.Equals(other.Node.h))  //if both f values are same
-        {
-            return -this.Node.coord.y.CompareTo(other.Node.coord.y); // then compare coord y
-        }
-        else
-        {
-            return this.Node.f.CompareTo(other.Node.f);
-        }
+        //if (this.Node.f.Equals(other.Node.f) && this.Node.g.Equals(other.Node.g) && this.Node.h.Equals(other.Node.h)) //if both f values are same
+        //{
+        //    return -this.Node.coord.y.CompareTo(other.Node.coord.y); // then compare coord y
+        //}
+        //else
+        //{
+            
+        //}
+
+        return this.Node.f.CompareTo(other.Node.f);
     }
 }
